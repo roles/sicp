@@ -1,0 +1,12 @@
+(define (my-cubrt x)
+    (define (good-enough? guess)
+        (< (/ (abs (- (improve guess) guess)) guess) 0.001))
+    (define (improve guess)
+        (/ (+ (* 2 guess)
+              (/ x (square guess))) 
+           3))
+    (define (cubrt-iter guess)
+        (if (good-enough? guess)
+            guess
+            (cubrt-iter (improve guess))))
+    (cubrt-iter 1.0))
