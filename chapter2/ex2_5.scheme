@@ -1,0 +1,23 @@
+(define (fast-expt b n)
+    (define (even? x) (= (remainder x 2) 0))
+    (define (fast-expt-iter a b n)
+        (cond ((= n 0) a)
+              ((even? n) (fast-expt-iter a (square b) (/ n 2)))
+              (else (fast-expt-iter (* a b) b (- n 1)))))
+    (fast-expt-iter 1 b n))
+
+(define (my-cons a b) (* (fast-expt 2 a) (fast-expt 3 b)))
+
+; 效率较低，可用二分答案提升效率
+(define (my-car n)
+    (define (iter a n)
+        (if (= (remainder n 2) 0)
+            (iter (+ a 1) (/ n 2))
+            a))
+    (iter 0 n))
+(define (my-cdr n)
+    (define (iter b n)
+        (if (= (remainder n 3) 0)
+            (iter (+ b 1) (/ n 3))
+            b))
+    (iter 0 n))

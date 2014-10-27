@@ -1,0 +1,68 @@
+(define (make-point a b)
+    (cons a b))
+
+(define (x-point p) (car p))
+(define (y-point p) (cdr p))
+(define (equal-point? p1 p2)
+    (and (= (x-point p1) (x-point p2))
+         (= (y-point p1) (y-point p2))))
+
+(define (print-point p)
+    (newline)
+    (display "(")
+    (display (x-point p))
+    (display ",")
+    (display (y-point p))
+    (display ")"))
+
+; 起点和终点表示线段
+(define (make-segment x1 y1 x2 y2)
+    (cons (make-point x1 y1)
+          (make-point x2 y2)))
+
+(define (start-segment s) (car s))
+(define (end-segment s) (cdr s))
+
+; 用两条线段表示矩形, start-segment要求一样, 且点积为0(直角)
+(define (rect-segment s1 s2)
+    (define (cross x1 y1 x2 y2)
+        (+ (* x1 x2) (* y1 y2)))
+    (let ((x1 (x-point (start-segment s1)))
+          (x2 (x-point (end-segment s1)))
+          (x3 (x-point (end-segment s2)))
+          (y1 (y-point (start-segment s1)))
+          (y2 (y-point (end-segment s1)))
+          (y3 (y-point (end-segment s2))))
+        (cond ((not (equal-point? (start-segment s1)
+                                  (start-segment s2)))
+               (error "different start point!"))
+              ((not (= (cross (- x2 x1) (- y2 y1) (- x3 x1) (- y3 y1)) 0))
+               (error "not a rectangular!"))
+              (else (cons s1 s2)))))
+
+; rect-width和rect-height作为抽象屏障
+; 不同的矩阵实现都通过实现这两个函数来求面积和周长
+(define (rect-width r)
+    (let ((s1 (car r)))
+        (let ((x1 (x-point (start-segment s1)))
+              (x2 (x-point (end-segment s1)))
+              (y1 (y-point (start-segment s1)))
+              (y2 (y-point (end-segment s1))))
+            (sqrt (+ (square (- x2 x1)) (square (- y2 y1)))))))
+
+(define (rect-height r)
+    (let ((s1 (cdr r)))
+        (let ((x1 (x-point (start-segment s1)))
+              (x2 (x-point (end-segment s1)))
+              (y1 (y-point (start-segment s1)))
+              (y2 (y-point (end-segment s1))))
+            (sqrt (+ (square (- x2 x1)) (square (- y2 y1)))))))
+
+(define (rect-area r)
+    (* (rect-width r) (rect-height r)))
+(define (rect-length r)
+    (* (+ (rect-width r) (rect-height r)) 2))
+
+(define r1 (rect-segment (make-segment 0 0 1 1) (make-segment 0 0 2 -2)))
+(rect-area r1)
+(rect-length r1)
